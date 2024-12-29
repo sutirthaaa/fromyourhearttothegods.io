@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Ear To The Gods</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+        }
+
+        .question {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .scenario {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            color: #34495e;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .result {
+            display: none;
+        }
+
+        .quote {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 2rem 0;
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            border-radius: 8px;
+        }
+
+        .visualization {
+            margin: 2rem auto;
+            text-align: center;
+        }
+
+        .diagnosis {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+
+        .diagnosis h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .pattern-indicator {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .professional-help {
+            background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .sparkle {
+            position: fixed;
+            pointer-events: none;
+            animation: sparkle 1.5s linear infinite;
+        }
+
+        @keyframes sparkle {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        #progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #eee;
+            margin: 1rem 0;
+            border-radius: 2px;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: #3498db;
+            border-radius: 2px;
+            width: 20%;
+            transition: width 0.3s ease;
+        }
+
+        .mythology-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+
+        .mythology-tale {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tale-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .story-input {
+            width: 100%;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div id="welcome-page" class="welcome-page">
+        <div class="welcome-content">
+            <h1 class="main-title">✨ From Your Heart To God's ✨</h1>
+            <p class="welcome-text">
+                Welcome to a sacred space where your journey meets divine wisdom.
+                Here, you can share your thoughts, feelings, and experiences in confidence.
+            </p>
+            <div class="disclaimer">
+                <h3>🕊️ A Safe Space for Your Soul 🕊️</h3>
+                <p>This platform is designed to provide emotional support through spiritual wisdom.
+                   While we offer guidance through ancient tales and self-reflection,
+                   this is not a substitute for professional mental health services.
+                   If you're experiencing severe distress, please seek professional help.</p>
+            </div>
+            <button onclick="startJourney()" class="start-button">Begin Your Journey</button>
+        </div>
+    </div>
+    <div class="container">
+        <h1>✨ Your Ear To The Gods ✨</h1>
+        <div class="subtitle">Share your journey, find your strength</div>
+        
+        <div id="progress-bar">
+            <div id="progress-fill"></div>
+        </div>
+
+        <div id="q1" class="question active">
+            <div class="scenario">
+                You're sitting alone in your room, reflecting on your current situation. As you think about what might have led to your current state, which scenario resonates most with your experience?
+            </div>
+            <div class="options">
+                <button onclick="answer(1, 'a')">Your life changed dramatically after a specific event (loss, change, or decision)</button>
+                <button onclick="answer(1, 'b')">You've been gradually feeling this way, with no clear starting point</button>
+                <button onclick="answer(1, 'c')">You notice these feelings come and go in cycles</button>
+                <button onclick="answer(1, 'd')">You're uncertain about the cause but feel overwhelmed</button>
+            </div>
+        </div>
+
+        <div id="q2" class="question">
+            <div class="scenario">
+                It's a typical day, and you're trying to go about your usual activities. How does your current situation typically manifest?
+            </div>
+            <div class="options">
+                <button onclick="answer(2, 'a')">You find it hard to focus or complete daily tasks</button>
+                <button onclick="answer(2, 'b')">You feel physically drained and have trouble sleeping</button>
+                <button onclick="answer(2, 'c')">You've withdrawn from social interactions and activities you once enjoyed</button>
+                <button onclick="answer(2, 'd')">You experience sudden mood changes that affect your day</button>
+            </div>
+        </div>
+
+        <div id="q3" class="question">
+            <div class="scenario">
+                When you think about your situation, which metaphor best describes how you see it?
+            </div>
+            <div class="options">
+                <button onclick="answer(3, 'a')">Like climbing a mountain - challenging but conquerable</button>
+                <button onclick="answer(3, 'b')">Like being in a maze - confused and searching for way out</button>
+                <button onclick="answer(3, 'c')">Like carrying a heavy weight - constant burden</button>
+                <button onclick="answer(3, 'd')">Like being in stormy weather - turbulent but temporary</button>
+            </div>
+        </div>
+
+        <div id="q4" class="question">
+            <div class="scenario">
+                Looking back at your journey with these feelings, which timeline matches your experience?
+            </div>
+            <div class="options">
+                <button onclick="answer(4, 'a')">Recent weeks, triggered by a specific event</button>
+                <button onclick="answer(4, 'b')">Several months, with varying intensity</button>
+                <button onclick="answer(4, 'c')">Over a year, becoming part of daily life</button>
+                <button onclick="answer(4, 'd')">As long as you can remember, with occasional breaks</button>
+            </div>
+        </div>
+
+        <div id="q5" class="question">
+            <div class="scenario">
+                Imagine you're writing a story about your future. Which ending feels most true to you right now?
+            </div>
+            <div class="options">
+                <button onclick="answer(5, 'a')">You see yourself completely overcoming this challenge</button>
+                <button onclick="answer(5, 'b')">You're learning to cope better each day</button>
+                <button onclick="answer(5, 'c')">You're uncertain but willing to keep trying</button>
+                <button onclick="answer(5, 'd')">You struggle to envision positive change</button>
+            </div>
+        </div>
+
+        <div id="result" class="result">
+            <div class="visualization">
+                <div id="canvas-container"></div>
+            </div>
+            <div class="diagnosis"></div>
+            <div class="quote">✨ "Now, let us lead you to the Gods" ✨</div>
+            <div class="mythology-section">
+                <div class="input-section">
+                    <h3>✨ Share Your Story ✨</h3>
+                    <p>Please describe what you're going through in one sentence:</p>
+                    <textarea id="userStory" rows="3" class="story-input"></textarea>
+                    <button onclick="getMythologicalTale()">Find Your Divine Tale</button>
+                </div>
+                <div id="mythology-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        let answers = {};
+        
+        function answer(question, choice) {
+            answers[question] = choice;
+            document.getElementById('progress-fill').style.width = `${(question * 20)}%`;
+            
+            if (question < 5) {
+                document.getElementById(`q${question}`).classList.remove('active');
+                document.getElementById(`q${question + 1}`).classList.add('active');
+                currentQuestion++;
+            } else {
+                showResult();
+            }
+        }
+
+        function calculateResults() {
+            let seriousness = 0;
+            let strength = 0;
+            let needsProfessional = false;
+
+            if (answers[4] === 'c' || answers[4] === 'd') seriousness += 30;
+            if (answers[2] === 'b' || answers[2] === 'c') seriousness += 30;
+            if (answers[5] === 'd') seriousness += 40;
+
+            if (answers[3] === 'a' || answers[3] === 'd') strength += 30;
+            if (answers[5] === 'a' || answers[5] === 'b') strength += 40;
+            if (answers[1] === 'a') strength += 30;
+
+            if (seriousness > 70 || 
+                (answers[4] === 'c' && answers[5] === 'd') || 
+                (answers[2] === 'c' && answers[3] === 'c')) {
+                needsProfessional = true;
+            }
+
+            return {
+                seriousness: Math.min(seriousness, 100),
+                strength: Math.min(strength, 100),
+                needsProfessional
+            };
+        }
+
+        function diagnosePattern(answers) {
+            let patterns = {
+                anxiety: 0,
+                depression: 0,
+                grief: 0,
+                burnout: 0,
+                adjustment: 0
+            };
+
+            if (answers[1] === 'a') {
+                patterns.grief += 2;
+                patterns.adjustment += 1;
+            }
+            if (answers[1] === 'b') patterns.depression += 2;
+            if (answers[1] === 'c') patterns.anxiety += 2;
+            if (answers[1] === 'd') patterns.burnout += 2;
+
+            if (answers[2] === 'a') patterns.anxiety += 2;
+            if (answers[2] === 'b') patterns.burnout += 2;
+            if (answers[2] === 'c') patterns.depression += 2;
+            if (answers[2] === 'd') {
+                patterns.anxiety += 1;
+                patterns.adjustment += 2;
+            }
+
+            if (answers[3] === 'b') patterns.anxiety += 2;
+            if (answers[3] === 'c') patterns.depression += 2;
+            if (answers[3] === 'd') patterns.adjustment += 2;
+
+            if (answers[4] === 'a') {
+                patterns.grief += 2;
+                patterns.adjustment += 2;
+            }
+            if (answers[4] === 'c' || answers[4] === 'd') {
+                patterns.depression += 2;
+                patterns.burnout += 2;
+            }
+
+            if (answers[5] === 'd') {
+                patterns.depression += 2;
+                patterns.burnout += 1;
+            }
+
+            return Object.entries(patterns).sort(([,a], [,b]) => b - a);
+        }
+
+        function generateDiagnosisText(patterns, results) {
+            let text = `<h2>Understanding Your Experience</h2>`;
+            
+            const descriptions = {
+                anxiety: {
+                    short: "feelings of uncertainty and overwhelming thoughts",
+                    long: "You might be experiencing heightened worry and unease about various aspects of life. This often comes with physical symptoms and racing thoughts."
+                },
+                depression: {
+                    short: "persistent feelings of heaviness and decreased engagement",
+                    long: "Your responses suggest a persistent heaviness that affects daily life and energy levels. This often includes changes in sleep, appetite, and social engagement."
+                },
+                grief: {
+                    short: "processing of loss and significant life changes",
+                    long: "You appear to be processing a significant loss or life change. This can affect various aspects of life and come in waves."
+                },
+                burnout: {
+                    short: "exhaustion and depletion of emotional resources",
+                    long: "Your patterns suggest emotional and physical exhaustion, possibly from prolonged stress or overwhelming responsibilities."
+                },
+                adjustment: {
+                    short: "challenges adapting to new circumstances",
+                    long: "You seem to be working through changes in your life circumstances. This often involves a period of emotional adaptation."
+                }
+            };
+
+            text += `<div class="pattern-indicator">
+                <h3>Primary Pattern</h3>
+                <p>${patterns[0][0].charAt(0).toUpperCase() + patterns[0][0].slice(1)}: ${descriptions[patterns[0][0]].long}</p>
+            </div>`;
+
+            if (patterns[1][1] >= patterns[0][1] - 2) {
+                text += `<div class="pattern-indicator">
+                    <h3>Secondary Pattern
+                    </h3>
+                    <p>${patterns[1][0].charAt(0).toUpperCase() + patterns[1][0].slice(1)}: ${descriptions[patterns[1][0]].long}</p>
+                </div>`;
+            }
+
+            text += `<div class="pattern-indicator">
+                <h3>Your Inner Strength</h3>
+                <p>Your responses show a resilience level of ${results.strength}%. `;
+            
+            if (results.strength > 70) {
+                text += "You demonstrate remarkable inner strength and a positive outlook toward challenge.</p>";
+            } else if (results.strength > 40) {
+                text += "You maintain hope while acknowledging the difficulty of your situation.</p>";
+            } else {
+                text += "You're carrying a heavy burden, but reaching out shows courage.</p>";
+            }
+
+            if (results.needsProfessional) {
+                text += `<div class="professional-help">
+                    <h3>✨ Professional Support Recommended ✨</h3>
+                    <p>Given the intensity and duration of your experience, speaking with a mental health professional could provide valuable support and coping strategies.</p>
+                    <p>Remember that seeking help is a sign of strength, not weakness.</p>
+                </div>`;
+            }
+
+            return text;
+        }
+
+        function showResult() {
+            document.getElementById(`q${currentQuestion}`).classList.remove('active');
+            document.getElementById('result').style.display = 'block';
+            createSparkles();
+            new p5(sketch);
+        }
+
+        function createSparkles() {
+            setInterval(() => {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.innerHTML = '✨';
+                sparkle.style.left = Math.random() * window.innerWidth + 'px';
+                sparkle.style.top = Math.random() * window.innerHeight + 'px';
+                document.body.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 1500);
+            }, 300);
+        }
+
+        const sketch = (p) => {
+            let results;
+            let patterns;
+            
+            p.setup = () => {
+                const canvas = p.createCanvas(800, 300);
+                canvas.parent('canvas-container');
+                results = calculateResults();
+                patterns = diagnosePattern(answers);
+                document.querySelector('.diagnosis').innerHTML = 
+                    generateDiagnosisText(patterns, results);
+                p.noLoop();
+            };
+            
+            p.draw = () => {
+                p.background(240);
+                
+                p.push();
+                p.translate(200, 150);
+                drawPieChart(p, results.seriousness, 'Emotional Impact', [255, 99, 132]);
+                p.pop();
+                
+                p.push();
+                p.translate(600, 150);
+                drawPieChart(p, results.strength, 'Inner Resilience', [75, 192, 192]);
+                p.pop();
+            };
+
+            function drawPieChart(p, value, label, color) {
+                p.fill(220);
+                p.noStroke();
+                p.ellipse(0, 0, 200, 200);
+                
+                p.fill(color[0], color[1], color[2], 200);
+                p.arc(0, 0, 200, 200, -p.HALF_PI, -p.HALF_PI + (value/100) * p.TWO_PI);
+                
+                p.fill(50);
+                p.textAlign(p.CENTER, p.CENTER);
+                p.textSize(24);
+                p.text(value + '%', 0, 0);
+                p.textSize(16);
+                p.text(label, 0, 30);
+            }
+        };
+
+        async function getMythologicalTale() {
+            const userStory = document.getElementById('userStory').value;
+            const mythologyDiv = document.getElementById('mythology-result');
+            mythologyDiv.innerHTML = '<div class="loading">🕉️ Consulting ancient wisdom... 🕉️</div>';
+
+            try {
+                const prompt = `Based on this personal story: "${userStory}"
+                Please provide an uplifting tale from Hindu mythology that would resonate with their situation.
+                Include these sections:
+                1. Title of the tale
+                2. The story in 3-4 sentences
+                3. Why this tale is relevant to their situation (2-3 sentences)
+                4. A relevant deity or figure from the tale to visualize
+                Format in markdown.`;
+
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'key': 'AIzaSyDGZotMgTeG9BuGE8dJKEUjtn_mGhHmJ84'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: prompt }]
+                        }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API response was not ok');
+                }
+
+                const data = await response.json();
+                const tale = data.candidates[0].content.parts[0].text;
+
+                // Process the tale and display it with appropriate styling
+                mythologyDiv.innerHTML = `
+                    <div class="mythology-tale">
+                        <img src="/api/placeholder/600/400" alt="Divine Tale Illustration" class="tale-image">
+                        ${tale}
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error fetching tale:', error);
+                mythologyDiv.innerHTML = `
+                    <div class="error-message">
+                        <p>We apologize, but we couldn't connect with the divine wisdom at this moment. 
+                           Please try again in a few moments. 🙏</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Add remaining JavaScript functions...
+        
+    </script>
+</body>
+</html>
